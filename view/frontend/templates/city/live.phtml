@@ -1,0 +1,188 @@
+<?php
+/**/
+?>
+<div data-bind="scope: 'cityWeather'">
+    <h2><?= /* @escapeNotVerified */
+        __("Weather in your city"); ?></h2>
+    <form id="city-weather" data-mage-init='{"validation": {}}' data-bind="submit: weatherSearch"
+          action="<?= $this->getUrl("weather/city/history"); ?>">
+        <fieldset class="fieldset">
+            <div class="field name required">
+                <label class="label" for="city"><span>City</span></label>
+                <div class="control">
+                    <input name="city" id="city" title="city" value="" class="input-text" type="text"
+                           data-validate='{"required":true}'/>
+                </div>
+            </div>
+
+            <div class="field querytype">
+                <label class="label"><?php echo 'Query Type' ?>:</label>
+                <div class="options-list">
+                    <div class="field choice">
+                        <input type="radio" class="radio" id="querytype-live"
+                               data-validate="{'validate-one-required-by-name':true}" name="querytype" value="Live"
+                               checked="checked" data-bind="checked: queryType">
+                        <label class="label" for="querytype-live">
+                            Live
+                        </label>
+                    </div>
+                    <div class="field choice">
+                        <input type="radio" class="radio" id="querytype-history"
+                               data-validate="{'validate-one-required-by-name':true}" name="querytype" value="History"
+                               data-bind="checked: queryType">
+                        <label class="label" for="querytype-history">
+                            History
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="field overview required" id="date-range" data-bind="visible: queryType() == 'History'">
+                <label for="from" class="label">
+                    <span>From date</span>
+                </label>
+                <div class="control">
+                    <input class="input-text required-entry"
+                           type="text"
+                           id="date_from"
+                           name="dateRange[from]" afterRender="datePickerInit"/>
+                </div>
+
+                <label for="to" class="label">
+                    <span>To date</span>
+                </label>
+                <div class="control">
+                    <input class="input-text required-entry"
+                           type="text"
+                           id="date_to"
+                           name="dateRange[to]"/>
+                </div>
+            </div>
+
+
+            <script>
+                require([
+                    'jquery',
+                    'mage/calendar'
+                ], function ($) {
+                    $(window).on("load", function () {
+                        setTimeout(function () {
+                            jQuery('#date-range').dateRange({
+                                buttonText: 'Select Date',
+                                dateFormat: 'yy-mm-dd',
+                                from: {
+                                    id: 'date_from'
+                                },
+                                to: {
+                                    id: 'date_to'
+                                },
+                                minDate: new Date("2020-01-01"),
+                                maxDate: new Date()
+                            });
+                        }, 1000);
+                    });
+                });
+            </script>
+
+
+        </fieldset>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button type="submit" title="Search" id="weather-search">
+                    <span>Search</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- ko if: queryType() == 'Live' && cityWeather().name -->
+    <div id="weather-data-history no-display">
+        <span data-bind="i18n: 'Current Weather'"></span>
+        <div>
+            <div class="header content" style="font-weight: bold;">
+                <span data-bind="text: cityWeather().name"></span>,
+                <span data-bind="text: cityWeather().sys.country"></span>~
+                <span data-bind="text: cityWeather().main.temp"></span>°C.
+            </div>
+            <ul class="weather-items text-container ">
+                <li>
+                    <span class="feel">Feels like:</span>
+                    <span data-bind="text: cityWeather().main.feels_like"></span>°C.
+                    <span data-bind="text: cityWeather().weather.main"></span>
+                </li>
+                <li><span class="humidity">Humidity:</span> <span data-bind="text: cityWeather().main.humidity"></span>%
+                </li>
+                <li><span class="speed">Wind Speed:</span> <span data-bind="text: cityWeather().wind.speed"></span></li>
+                <li><span class="visibility">Visibility:</span> <span
+                        data-bind="text: (cityWeather().visibility/1000.0).toFixed(2);"></span>Km
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    <!-- /ko -->
+    <!-- ko if: cityWeather().cod == 404 -->
+    <div class="field-error"><span data-bind="i18n: 'City Not Found'"></span></div>
+    <!-- /ko -->
+
+
+    <!-- ko if: queryType() == 'History' && cityNotFound() == true -->
+    <div class="field-error"><span data-bind="i18n: 'City Not Found'"></span></div>
+    <!-- /ko -->
+
+    <!-- ko if: queryType() == 'History' && cityWeatherHistory().length > 0 -->
+    <div id="weather-history">
+        <strong data-bind="i18n: 'City Weather Histroy'"></strong>
+
+        <table class="tg" id="city-history-tbl">
+            <thead>
+            <tr>
+                <th>Date Time</th>
+                <th>City</th>
+                <th>Country</th>
+                <th>Temp.</th>
+                <th>Feels Like</th>
+                <th>Humidity</th>
+                <th>Wind Speed</th>
+                <th>Visibility</th>
+            </tr>
+            </thead>
+            <tbody data-bind='foreach:cityWeatherHistory()'>
+
+            <tr>
+                <td><span data-bind="text:new Date(dt*1000).toISOString()"></span></td>
+                <td><span data-bind="text:name"></span></td>
+                <td><span data-bind="text:sys.country"></span></td>
+                <td><span data-bind="text:main.temp"></span></td>
+                <td><span data-bind="text:main.feels_like"></span></td>
+                <td><span data-bind="text:main.humidity"></span></td>
+                <td><span data-bind="text:wind.speed"></span></td>
+                <td><span data-bind="text:(visibility/1000.0).toFixed(2);"></span>Km</td>
+            </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+    <button type="button" title="Download PDF" id="download-pdf" data-bind="click: downloadPdf">
+        <span>Download Histroy PDF</span>
+    </button>
+    <!-- /ko -->
+
+</div>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "cityWeather": {
+                    "component": "Toptal_OpenWeather/js/view/cityweather"
+                }
+            }
+        }
+    }
+}
+
+
+
+
+</script>

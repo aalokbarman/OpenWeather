@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Toptal\OpenWeather\Api\WeatherRepositoryInterface"
+                type="Toptal\OpenWeather\Model\WeatherRepository"/>
+    <preference for="Toptal\OpenWeather\Api\Data\WeatherInterface" type="Toptal\OpenWeather\Model\Data\Weather"/>
+    <preference for="Toptal\OpenWeather\Api\Data\WeatherSearchResultsInterface"
+                type="Magento\Framework\Api\SearchResults"/>
+    <virtualType name="Toptal\OpenWeather\Model\ResourceModel\Weather\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">toptal_openweather_weather</argument>
+            <argument name="resourceModel" xsi:type="string">Toptal\OpenWeather\Model\ResourceModel\Weather\Collection
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="toptal_openweather_weather_listing_data_source" xsi:type="string">
+                    Toptal\OpenWeather\Model\ResourceModel\Weather\Grid\Collection
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>

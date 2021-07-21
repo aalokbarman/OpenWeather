@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Toptal_OpenWeather::toptal_openweather_weather" title="weather" module="Toptal_OpenWeather"
+             sortOrder="9999" resource="Magento_Backend::content" action="toptal_openweather/weather/index"/>
+    </menu>
+</config>

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="toptal_openweather_weather" resource="default" engine="innodb"
+           comment="toptal_openweather_weather Table">
+        <column xsi:type="smallint" name="weather_id" padding="6" unsigned="true" nullable="false" identity="true"
+                comment="Entity Id"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="weather_id"/>
+        </constraint>
+        <column name="city" nullable="true" xsi:type="varchar" length="255"/>
+        <column name="country" nullable="true" xsi:type="varchar" length="255"/>
+        <column name="created_at" nullable="true" xsi:type="timestamp" default="CURRENT_TIMESTAMP"/>
+        <column name="json_data" nullable="true" xsi:type="text"/>
+    </table>
+</schema>
